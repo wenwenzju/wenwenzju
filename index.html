@@ -177,15 +177,18 @@
                 </section>
                 
                 
-                <section class="switch-part switch-part2">
+                <!-- <section class="switch-part switch-part2">
                     <div class="widget tagcloud" id="js-tagcloud">
-                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="./tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="./tags/javascript/">javascript</a></li><li class="tag-list-item"><a class="tag-list-link" href="./tags/系统/">系统</a></li></ul>
+                        <ul class="tag-list">
+                            <li class="tag-list-item"><a class="tag-list-link" href="./tags/css/">css</a></li>
+                            <li class="tag-list-item"><a class="tag-list-link" href="./tags/javascript/">javascript</a></li>
+                            <li class="tag-list-item"><a class="tag-list-link" href="./tags/系统/">系统</a></li></ul>
                     </div>
-                </section>
+                </section> -->
                 
                 
                 
-                <section class="switch-part switch-part3">
+               <!--  <section class="switch-part switch-part3">
                     <div id="js-friends">
                     
                       <a class="main-nav-link switch-friends-link" href="https://majormayer.github.io/navigationMajor/">个站导航</a>
@@ -193,15 +196,15 @@
                       <a class="main-nav-link switch-friends-link" href="http://blog.csdn.net/majormayer">CSDN</a>
                     
                     </div>
-                </section>
+                </section> -->
                 
 
                 
                 
-                <section class="switch-part switch-part4">
+                <!-- <section class="switch-part switch-part4">
                 
                     <div id="js-aboutme">命 里 有 时 终 须 有 , 人 生 无 时 莫 强 求</div>
-                </section>
+                </section> -->
                 
             </div>
         </div>
@@ -212,21 +215,21 @@
       <nav id="mobile-nav">
       <div class="overlay">
           <div class="slider-trigger"></div>
-          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">MajorMayer</a></h1>
+          <h1 class="header-author js-mobile-header hide"><a href="./" title="回到主页">wenwenzju</a></h1>
       </div>
     <div class="intrude-less">
         <header id="header" class="inner">
-            <a href="/" class="profilepic">
+            <a href="./" class="profilepic">
                 <img src="./img/avatar.jpg" class="animated zoomIn">
             </a>
             <hgroup>
-              <h1 class="header-author"><a href="/" title="回到主页">MajorMayer</a></h1>
+              <h1 class="header-author"><a href="./" title="回到主页">wenwenzju</a></h1>
             </hgroup>
             
             <nav class="header-menu">
                 <ul>
                 
-                    <li><a href="/">主页</a></li>
+                    <li><a href="./">主页</a></li>
                 
                     <li><a href="./archives/">文章</a></li>
                 
@@ -239,7 +242,7 @@
                 <div class="clearfix"></div>
                 </ul>
             </nav>
-            <nav class="header-nav">
+            <!-- <nav class="header-nav">
                         <ul class="social">
                             
                                 <a class="fa Email" target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=bAoNAQMZH0IPBAMbLAoDFAENBQBCDwMB" title="Email"></a>
@@ -249,13 +252,587 @@
                                 <a class="fa QQ" target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=1414294708&site=qq&menu=yes" title="QQ"></a>
                             
                         </ul>
-            </nav>
+            </nav> -->
         </header>                
     </div>
     <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
       <div class="body-wrap">
   
+    <article id="post-使用not()选择器来决定表单是否显示边框" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/" class="article-date">
+      <time datetime="2017-02-08T05:30:59.823Z" itemprop="datePublished">2017-02-08</time>
+</a>
+
+ 
+    <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2017/02/08/使用not()选择器来决定表单是否显示边框/" ></span>
+        
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="./2017/02/08/使用not()选择器来决定表单是否显示边框/">CSS 技巧 &gt; 使用 :Not() 选择器来决定表单是否显示边框</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <p>利用<code>:not()</code>选择器可以匹配非指定元素/选择器的每个元素。<br>现在利用该选择器来实现一个导航栏效果<br>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="./categories/前端/">前端</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="./tags/css/">css</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+    <article id="post-使用not()选择器来决定表单是否显示边框" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/" class="article-date">
+      <time datetime="2017-02-08T05:30:59.823Z" itemprop="datePublished">2017-02-08</time>
+</a>
+
+ 
+    <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2017/02/08/使用not()选择器来决定表单是否显示边框/" ></span>
+        
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="./2017/02/08/使用not()选择器来决定表单是否显示边框/">CSS 技巧 &gt; 使用 :Not() 选择器来决定表单是否显示边框</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <p>利用<code>:not()</code>选择器可以匹配非指定元素/选择器的每个元素。<br>现在利用该选择器来实现一个导航栏效果<br>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="./categories/前端/">前端</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="./tags/css/">css</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+    <article id="post-使用not()选择器来决定表单是否显示边框" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/" class="article-date">
+      <time datetime="2017-02-08T05:30:59.823Z" itemprop="datePublished">2017-02-08</time>
+</a>
+
+ 
+    <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2017/02/08/使用not()选择器来决定表单是否显示边框/" ></span>
+        
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="./2017/02/08/使用not()选择器来决定表单是否显示边框/">CSS 技巧 &gt; 使用 :Not() 选择器来决定表单是否显示边框</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <p>利用<code>:not()</code>选择器可以匹配非指定元素/选择器的每个元素。<br>现在利用该选择器来实现一个导航栏效果<br>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="./categories/前端/">前端</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="./tags/css/">css</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+    <article id="post-使用not()选择器来决定表单是否显示边框" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/" class="article-date">
+      <time datetime="2017-02-08T05:30:59.823Z" itemprop="datePublished">2017-02-08</time>
+</a>
+
+ 
+    <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2017/02/08/使用not()选择器来决定表单是否显示边框/" ></span>
+        
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="./2017/02/08/使用not()选择器来决定表单是否显示边框/">CSS 技巧 &gt; 使用 :Not() 选择器来决定表单是否显示边框</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <p>利用<code>:not()</code>选择器可以匹配非指定元素/选择器的每个元素。<br>现在利用该选择器来实现一个导航栏效果<br>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="./categories/前端/">前端</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="./tags/css/">css</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+    <article id="post-使用not()选择器来决定表单是否显示边框" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/" class="article-date">
+      <time datetime="2017-02-08T05:30:59.823Z" itemprop="datePublished">2017-02-08</time>
+</a>
+
+ 
+    <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2017/02/08/使用not()选择器来决定表单是否显示边框/" ></span>
+        
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="./2017/02/08/使用not()选择器来决定表单是否显示边框/">CSS 技巧 &gt; 使用 :Not() 选择器来决定表单是否显示边框</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <p>利用<code>:not()</code>选择器可以匹配非指定元素/选择器的每个元素。<br>现在利用该选择器来实现一个导航栏效果<br>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="./categories/前端/">前端</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="./tags/css/">css</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+    <article id="post-使用not()选择器来决定表单是否显示边框" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/" class="article-date">
+      <time datetime="2017-02-08T05:30:59.823Z" itemprop="datePublished">2017-02-08</time>
+</a>
+
+ 
+    <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2017/02/08/使用not()选择器来决定表单是否显示边框/" ></span>
+        
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="./2017/02/08/使用not()选择器来决定表单是否显示边框/">CSS 技巧 &gt; 使用 :Not() 选择器来决定表单是否显示边框</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <p>利用<code>:not()</code>选择器可以匹配非指定元素/选择器的每个元素。<br>现在利用该选择器来实现一个导航栏效果<br>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="./categories/前端/">前端</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="./tags/css/">css</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+    <article id="post-使用not()选择器来决定表单是否显示边框" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/" class="article-date">
+      <time datetime="2017-02-08T05:30:59.823Z" itemprop="datePublished">2017-02-08</time>
+</a>
+
+ 
+    <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2017/02/08/使用not()选择器来决定表单是否显示边框/" ></span>
+        
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="./2017/02/08/使用not()选择器来决定表单是否显示边框/">CSS 技巧 &gt; 使用 :Not() 选择器来决定表单是否显示边框</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <p>利用<code>:not()</code>选择器可以匹配非指定元素/选择器的每个元素。<br>现在利用该选择器来实现一个导航栏效果<br>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="./categories/前端/">前端</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="./tags/css/">css</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+    <article id="post-使用not()选择器来决定表单是否显示边框" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/" class="article-date">
+      <time datetime="2017-02-08T05:30:59.823Z" itemprop="datePublished">2017-02-08</time>
+</a>
+
+ 
+    <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2017/02/08/使用not()选择器来决定表单是否显示边框/" ></span>
+        
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="./2017/02/08/使用not()选择器来决定表单是否显示边框/">CSS 技巧 &gt; 使用 :Not() 选择器来决定表单是否显示边框</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <p>利用<code>:not()</code>选择器可以匹配非指定元素/选择器的每个元素。<br>现在利用该选择器来实现一个导航栏效果<br>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="./categories/前端/">前端</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="./tags/css/">css</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="./2017/02/08/使用not()选择器来决定表单是否显示边框/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
     <article id="post-使用not()选择器来决定表单是否显示边框" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -494,7 +1071,7 @@
         <div id="footer-info">
             <div class="footer-left">
                 <i class="fa fa-copyright"></i> 
-                2019 wenwenzju
+                2020 wenwenzju
             </div>
             <div class="footer-right">
                 wenwenzju的个人主页
