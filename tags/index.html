@@ -323,15 +323,16 @@
     <hr>
 <br>
 <ul class="category-list">
-    <li class="category-list-item"><a class="category-list-link" href="./categories/前端/">前端</a><span class="category-list-count">1</span></li>
-    <li class="category-list-item"><a class="category-list-link" href="./categories/前端开发/">前端开发</a><span class="category-list-count">1</span></li>
-    <li class="category-list-item"><a class="category-list-link" href="./categories/系统/">系统</a><span class="category-list-count">1</span></li></ul>
+    <li class="category-list-item"><a class="category-list-link" href="./categories/深度学习/">深度学习</a><span class="category-list-count">0</span></li>
+    <li class="category-list-item"><a class="category-list-link" href="./categories/机器学习/">机器学习</a><span class="category-list-count">0</span></li>
+    <li class="category-list-item"><a class="category-list-link" href="./categories/算法/">算法</a><span class="category-list-count">0</span></li>
+    <li class="category-list-item"><a class="category-list-link" href="./categories/其他/">其他</a><span class="category-list-count">0</span></li></ul>
 
 <p class="count"></p>
 
-<div class="tags">
+<!-- <div class="tags">
     <a href="./tags/css/" style="font-size: 16px; color: #808080">css</a> <a href="./tags/javascript/" style="font-size: 16px; color: #808080">javascript</a> <a href="./tags/系统/" style="font-size: 16px; color: #808080">系统</a>
-</div>
+</div> -->
 <style>
     .category-list li{
         display: inline-block;
@@ -376,7 +377,6 @@
 <!-- Count tags and categories -->
 <p id="count">
         已有<span><script>document.write($(".category-list-item").length)</script></span>个分类，
-        共计<span><script>document.write($(".tags > a").length)</script></span>个标签
 </p>
 <script>
     $('#count').appendTo('.count');
@@ -447,7 +447,7 @@
             <div class="visit">
                 
                     <span id="busuanzi_container_site_uv" style='display:none'>
-                        <span id="site-visit" title="本站到访数"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        <span id="site-visit" title="本站到访数"><i class="fa fa-user" aria-hidden="false"></i><span id="busuanzi_value_site_uv"></span>
                         </span>
                     </span>
                 
@@ -456,7 +456,7 @@
                 
                 
                     <span id="busuanzi_container_page_pv" style='display:none'>
-                        <span id="page-visit"  title="本页阅读量"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        <span id="page-visit"  title="本页阅读量"><i class="fa fa-eye animated infinite pulse" aria-hidden="false"></i><span id="busuanzi_value_page_pv"></span>
                         </span>
                     </span>
                 
@@ -466,7 +466,7 @@
 </footer>
     </div>
     
-<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+<script data-main="。/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
 
     <script>
         $(document).ready(function() {
