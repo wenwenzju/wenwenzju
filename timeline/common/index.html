@@ -17,13 +17,13 @@
 
 
 
-<meta name="description" content="matlab与c/c++混合编程——c/c++调用matlab">
+<meta name="description" content="???">
 <meta property="og:type" content="article">
-<meta property="og:title" content="matlab与c/c++混合编程——c/c++调用matlab">
-<meta property="og:url" content="https://github.com/wenwenzju/wenwenzju.github.io/blob/master/timeline/2015/其他/c++调用matlab/index.html">
+<meta property="og:title" content="???">
+<meta property="og:url" content="https://github.com/wenwenzju/wenwenzju.github.io/blob/master/timeline/???">
 <meta property="og:site_name" content="wenwenzju">
-<meta property="og:description" content="matlab与c/c++混合编程——c/c++调用matlab">
-<meta property="og:updated_time" content="2015-11-06T20:52:43Z">
+<meta property="og:description" content="???">
+<meta property="og:updated_time" content="???">
 
 <link rel="apple-touch-icon" href= "./apple-touch-icon.png">
 
@@ -55,7 +55,7 @@
 <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 
-<title>matlab与c/c++混合编程——c/c++调用matlab | wenwenzju</title>
+<title>??? | wenwenzju</title>
 
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
@@ -270,11 +270,11 @@
     <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
       <div class="body-wrap">
-        <article id="matlab与c/c++混合编程——c/c++调用matlab" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="???" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-        <a href="./timeline/2015/其他/c++调用matlab/" class="article-date">
-        <time datetime="2015-11-06T20:52:43Z" itemprop="datePublished">2015-11-06</time>
+        <a href="???" class="article-date">
+        <time datetime="???" itemprop="datePublished">???</time>
         </a>
     </div>
   
@@ -282,169 +282,30 @@
       <input type="hidden" class="isFancy" />
       <header class="article-header">
         <h1 class="article-title" itemprop="name">
-          matlab与c/c++混合编程——c/c++调用matlab
+          ???
         </h1>
       </header>
       
       <div class="article-info article-info-post">
         <div class="article-category tagcloud">
-        <a class="article-category-link" href="./categories/其他/">其他</a>
+        <a class="article-category-link" href="./categories/???/">???</a>
         </div>
         <div class="clearfix"></div>
       </div>
       
     
     <div class="article-entry" itemprop="articleBody">
-        <p><span></span>上一篇blog讲了如何用matlab调用c/c++的接口，并用opencv读取图像显示图像为例，谈了matlab矩阵在内存的存储顺序与opencv Mat的存储顺序的不同，和它们之间的转换，以及mex编译的过程。今天谈一谈如何用c/c++调用matlab的接口。</p>
-<p><span></span>假设我们有一个.m文件function，功能是读取指定路径的图像并显示。如下所示</p>
-<p></p><pre><code class="language-plain">function myimread(imgpath)
-img = imread(imgpath);
-imshow(img);</code></pre><pre><code class="language-plain">pause(2);</code></pre><br /><span></span>将matlab的function生成可以被c/c++调用的接口，要用到mcc指令： mcc -W lib:myimread -T link:lib myimread.m;lib:后面的库名字可以自己指定，后面的m文件可以有多个，即可以将多个matlab的function生成到一个库中。关于mcc的具体用法，参加help文档，上述语句执行完之后，会生成一大堆文件，而我们要用到的是3个：myimread.h，头文件；myimread.lib，静态链接库；myimread.dll，动态链接库。将这三个文件拷贝到c/c++的工程目录下。先来看一下myimread.h里面有什么。
-<p></p><pre><code class="language-cpp">/*
- * MATLAB Compiler: 4.14 (R2010b)
- * Date: Fri Nov 06 22:14:13 2015
- * Arguments: "-B" "macro_default" "-W" "lib:myimread" "-T" "link:lib"
- * "myimread.m" 
- */
-
-
-#ifndef __myimread_h
-#define __myimread_h 1
-
-
-#if defined(__cplusplus) &amp;&amp; !defined(mclmcrrt_h) &amp;&amp; defined(__linux__)
-#  pragma implementation "mclmcrrt.h"
-#endif
-#include "mclmcrrt.h"
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-#if defined(__SUNPRO_CC)
-/* Solaris shared libraries use __global, rather than mapfiles
- * to define the API exported from a shared library. __global is
- * only necessary when building the library -- files including
- * this header file to use the library do not need the __global
- * declaration; hence the EXPORTING_&lt;library&gt; logic.
- */
-
-
-#ifdef EXPORTING_myimread
-#define PUBLIC_myimread_C_API __global
-#else
-#define PUBLIC_myimread_C_API /* No import statement needed. */
-#endif
-
-
-#define LIB_myimread_C_API PUBLIC_myimread_C_API
-
-
-#elif defined(_HPUX_SOURCE)
-
-
-#ifdef EXPORTING_myimread
-#define PUBLIC_myimread_C_API __declspec(dllexport)
-#else
-#define PUBLIC_myimread_C_API __declspec(dllimport)
-#endif
-
-
-#define LIB_myimread_C_API PUBLIC_myimread_C_API
-
-
-
-
-#else
-
-
-#define LIB_myimread_C_API
-
-
-#endif
-
-
-/* This symbol is defined in shared libraries. Define it here
- * (to nothing) in case this isn't a shared library. 
- */
-#ifndef LIB_myimread_C_API 
-#define LIB_myimread_C_API /* No special import/export declaration */
-#endif
-
-
-extern LIB_myimread_C_API 
-bool MW_CALL_CONV myimreadInitializeWithHandlers(
-       mclOutputHandlerFcn error_handler, 
-       mclOutputHandlerFcn print_handler);
-
-
-extern LIB_myimread_C_API 
-bool MW_CALL_CONV myimreadInitialize(void);
-
-
-extern LIB_myimread_C_API 
-void MW_CALL_CONV myimreadTerminate(void);
-
-
-
-
-
-
-extern LIB_myimread_C_API 
-void MW_CALL_CONV myimreadPrintStackTrace(void);
-
-
-extern LIB_myimread_C_API 
-bool MW_CALL_CONV mlxMyimread(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[]);
-
-
-extern LIB_myimread_C_API 
-long MW_CALL_CONV myimreadGetMcrID();
-
-
-
-
-
-
-extern LIB_myimread_C_API bool MW_CALL_CONV mlfMyimread(mxArray* imgpath);
-
-
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-</code></pre><br /><span></span>这么多东西，我们要用到的是myimreadInitialize, myimreadTerminate, mlxMyimread, mlfMyimread. 前两个用来初始化和终止是调用，mlxMyimread提供了像mexFunction那样的调用方式，而mlfMyimread的调用更符合c/c++的调用习惯。其他的接口暂时还没有过多的研究。
-<p><span></span>main函数如下所示，工程配置属性中，包含目录一定要添加matlab的库E:\MATLAB\extern\include；库目录也要添加：E:\MATLAB\extern\lib\win32\microsoft;连接器的输入中加入如下静态库：libmat.lib libmex.lib mclmcrrt.lib myimread.lib。前三个是matlab的静态库，第四个是我们自己生成的静态库</p>
-<p></p><pre><code class="language-cpp">#include "myimread.h"
-#include "mex.h"
-#include "matrix.h"
-
-void main()
-{
-	mclInitializeApplication(NULL, 0);	//must
-
-	char imgpath[] = "C:\\Users\\New\\Desktop\\leifengta.jpg";
-	mxArray* mimgpath = mxCreateString(imgpath);
-	mxArray* img;
-
-	myimreadInitialize();	//must initialize before call myimread
-	mlfMyimread(mimgpath);
-
-	myimreadTerminate();	
-	mclTerminateApplication();
-}</code></pre><br /><span></span>上述代码编译运行后，图像显示2s后关闭。
-<p><span></span>myimread.m不能返回图像数据，因为我们不知道图像的大小，这样的话在c/c++里面就无法初始化(即为返回值分配内存)返回值img，解决方法还没想出来。</p>
+        ???
     </div>
     
   </div>
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="./timeline/2015/其他/c++调用matlab/">matlab与c/c++混合编程——c/c++调用matlab</a></p>
+        <p><span>本文标题:</span><a href="./timeline/???">???</a></p>
         <p><span>文章作者:</span><a href="./" title="回到主页">wenwenzju</a></p>
-        <p><span>发布时间:</span>2015-11-06, 20:52:43</p>
-        <p><span>最后更新:</span>2015-11-06, 20:52:43</p>
+        <p><span>发布时间:</span>???</p>
+        <p><span>最后更新:</span>???</p>
         <p>
             <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
         </p>
@@ -505,7 +366,7 @@ void main()
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"matlab与c/c++混合编程——c/c++调用matlab | wenwenzju ","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"??? | wenwenzju ","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -521,7 +382,7 @@ void main()
     
       <div class="duoshuo" id="comments">
     <div id="comment-box" ></div>
-    <div class="ds-thread" id="ds-thread" data-thread-key="timeline/2015/其他/c++调用matlab/" data-title="" data-url="https://github.com/wenwenzju/wenwenzju.github.io/blob/master/timeline/"></div>
+    <div class="ds-thread" id="ds-thread" data-thread-key="timeline/???" data-title="" data-url="https://github.com/wenwenzju/wenwenzju.github.io/blob/master/timeline/"></div>
     <script>
         var duoshuoQuery = {short_name:"wenwenzju"};
         var loadComment = function(){
@@ -647,9 +508,9 @@ MathJax.Hub.Queue(function() {
 
 
 <div class="scroll" id="scroll">
-    <a href="timeline/2015/其他/c++调用matlab/#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
-    <a href="timeline/2015/其他/c++调用matlab/#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
-    <a href="timeline/2015/其他/c++调用matlab/#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+    <a href="timeline/???#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="timeline/???#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="timeline/???#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
 </div>
 <script>
     // Open in New Window
