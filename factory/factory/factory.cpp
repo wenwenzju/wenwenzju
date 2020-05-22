@@ -124,9 +124,78 @@ void timelineFactory()
 	writeHtml("index.html", index);
 }
 
+void tagsFactory()
+{
+	string config_file_path = "config/tags.txt";
+	string index_file_path = "../../tags/index.html";
+	ifstream config_file(config_file_path);
+	string line;
+	getline(config_file, line);
+	string ymd = line.substr(line.find(':')+2);
+	getline(config_file, line);
+	string hms = line.substr(line.find(':')+2);
+	getline(config_file, line);
+	string category = line.substr(line.find(':')+2);
+	getline(config_file, line);
+	int cnt = stoi(line.substr(line.find(':')+2));
+
+	vector<string> index;
+	loadHtml(index_file_path, index);
+	string& line271 = index[271];
+
+	string new_line;
+	size_t pre = 0;
+	auto pattern = line271.find('"', pre);
+	new_line += line271.substr(pre, pattern-pre+1);
+	new_line += ymd;
+	new_line += "T";
+	new_line += hms;
+	new_line += "Z";
+	pre = line271.find('"', pattern+1);
+	pattern = line271.find('>', pre+1);
+	new_line += line271.substr(pre, pattern-pre+1);
+	new_line += ymd;
+	pattern = line271.find('<', pattern+1);
+	new_line += line271.substr(pattern);
+	swap (new_line, line271);
+
+	string* line_category = nullptr;
+	if (category == "深度学习")
+	{
+		line_category = &index[325];
+	}
+	else if (category == "机器学习")
+	{
+		line_category = &index[326];
+	}
+	else if (category == "算法")
+	{
+		line_category = &index[327];
+	}
+	else
+	{
+		line_category = &index[328];
+	}
+	{
+		string pattern = "class=\"category-list-count\">";
+		auto i1 = line_category->find(pattern)+pattern.size();
+		string new_line;
+		new_line += line_category->substr(0, i1);
+		auto i2 = line_category->find('<', i1);
+		auto tot = stoi(line_category->substr(i1, i2-i1));
+		tot += cnt;
+		new_line += to_string((long long)tot);
+		new_line += line_category->substr(i2);
+		swap(new_line, *line_category);
+	}
+
+	writeHtml("tags_index.html", index);
+}
+
 int main()
 {
-	timelineFactory();
+	//timelineFactory();
+	tagsFactory();
 
 	return 0;
 }
