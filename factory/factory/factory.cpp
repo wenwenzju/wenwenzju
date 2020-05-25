@@ -191,7 +191,8 @@ void timelineFactory()
 			swap(line, new_line);
 		}
 	}
-	writeHtml("index.html", index);
+	string to_write = config["category"][0]+"_"+config["name"][0]+"_timeline.html";
+	writeHtml(UTF8ToANSI(to_write), index);
 }
 
 void tagsFactory()
@@ -426,17 +427,18 @@ void categoryFactory()
 		}
 	}
 	index.insert(index.begin()+section_start, new_archives.begin(), new_archives.end());
-	string to_write = to_add.category+"_"+to_add.name+".html";
+	string to_write = to_add.category+"_"+to_add.name+"_categories.html";
 	writeHtml(UTF8ToANSI(to_write), index);
 }
 
-void categoryFactory()
+void archivesFactory()
 {
 	string config_file = "config/timeline.txt";
 	map<string, vector<string> > config;
 	loadConfig(config_file, config);
 
 	string index_file = "../../archives/index.html";
+	vector<string> index;
 	loadHtml(index_file, index);
 
 	CategoryArchive to_add;
@@ -563,15 +565,15 @@ void categoryFactory()
 		}
 	}
 	index.insert(index.begin()+section_start, new_archives.begin(), new_archives.end());
-	string to_write = to_add.category+"_"+to_add.name+".html";
-	writeHtml(UTF8ToANSI(to_write), index);
+	writeHtml("archives.html", index);
 }
 
 int main()
 {
-	//timelineFactory();
-	//tagsFactory();
+	timelineFactory();
+	tagsFactory();
 	categoryFactory();
+	archivesFactory();
 
 	return 0;
 }

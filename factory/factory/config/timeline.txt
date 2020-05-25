@@ -1,10 +1,10 @@
 time: 2015
 category: 其他
-name: c++调用matlab
-ymd: 2015-11-06
-hms: 20:52:43
-description: matlab与c/c++混合编程——c/c++调用matlab
-title: matlab与c/c++混合编程——c/c++调用matlab
+name: matlab调用c++
+ymd: 2015-11-01
+hms: 11:26:00
+description: matlab与c/c++混合编程——matlab调用c/c++
+title: matlab与c/c++混合编程——matlab调用c/c++
 20[description]: ${description}
 22[og-title]: ${description}
 23[og-url]: ${time}/${category}/${name}/index.html
@@ -29,143 +29,74 @@ title: matlab与c/c++混合编程——c/c++调用matlab
 511[top]: ${time}/${category}/${name}/
 512[comments]: ${time}/${category}/${name}/
 513[bottom]: ${time}/${category}/${name}/
-298[article_body]: <p><span></span>上一篇blog讲了如何用matlab调用c/c++的接口，并用opencv读取图像显示图像为例，谈了matlab矩阵在内存的存储顺序与opencv Mat的存储顺序的不同，和它们之间的转换，以及mex编译的过程。今天谈一谈如何用c/c++调用matlab的接口。</p>
-<p><span></span>假设我们有一个.m文件function，功能是读取指定路径的图像并显示。如下所示</p>
-<p></p><pre><code class="language-plain">function myimread(imgpath)
-img = imread(imgpath);
-imshow(img);</code></pre><pre><code class="language-plain">pause(2);</code></pre><br /><span></span>将matlab的function生成可以被c/c++调用的接口，要用到mcc指令： mcc -W lib:myimread -T link:lib myimread.m;lib:后面的库名字可以自己指定，后面的m文件可以有多个，即可以将多个matlab的function生成到一个库中。关于mcc的具体用法，参加help文档，上述语句执行完之后，会生成一大堆文件，而我们要用到的是3个：myimread.h，头文件；myimread.lib，静态链接库；myimread.dll，动态链接库。将这三个文件拷贝到c/c++的工程目录下。先来看一下myimread.h里面有什么。
-<p></p><pre><code class="language-cpp">/*
- * MATLAB Compiler: 4.14 (R2010b)
- * Date: Fri Nov 06 22:14:13 2015
- * Arguments: "-B" "macro_default" "-W" "lib:myimread" "-T" "link:lib"
- * "myimread.m" 
- */
-
-
-#ifndef __myimread_h
-#define __myimread_h 1
-
-
-#if defined(__cplusplus) &amp;&amp; !defined(mclmcrrt_h) &amp;&amp; defined(__linux__)
-#  pragma implementation "mclmcrrt.h"
-#endif
-#include "mclmcrrt.h"
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-#if defined(__SUNPRO_CC)
-/* Solaris shared libraries use __global, rather than mapfiles
- * to define the API exported from a shared library. __global is
- * only necessary when building the library -- files including
- * this header file to use the library do not need the __global
- * declaration; hence the EXPORTING_&lt;library&gt; logic.
- */
-
-
-#ifdef EXPORTING_myimread
-#define PUBLIC_myimread_C_API __global
-#else
-#define PUBLIC_myimread_C_API /* No import statement needed. */
-#endif
-
-
-#define LIB_myimread_C_API PUBLIC_myimread_C_API
-
-
-#elif defined(_HPUX_SOURCE)
-
-
-#ifdef EXPORTING_myimread
-#define PUBLIC_myimread_C_API __declspec(dllexport)
-#else
-#define PUBLIC_myimread_C_API __declspec(dllimport)
-#endif
-
-
-#define LIB_myimread_C_API PUBLIC_myimread_C_API
-
-
-
-
-#else
-
-
-#define LIB_myimread_C_API
-
-
-#endif
-
-
-/* This symbol is defined in shared libraries. Define it here
- * (to nothing) in case this isn't a shared library. 
- */
-#ifndef LIB_myimread_C_API 
-#define LIB_myimread_C_API /* No special import/export declaration */
-#endif
-
-
-extern LIB_myimread_C_API 
-bool MW_CALL_CONV myimreadInitializeWithHandlers(
-       mclOutputHandlerFcn error_handler, 
-       mclOutputHandlerFcn print_handler);
-
-
-extern LIB_myimread_C_API 
-bool MW_CALL_CONV myimreadInitialize(void);
-
-
-extern LIB_myimread_C_API 
-void MW_CALL_CONV myimreadTerminate(void);
-
-
-
-
-
-
-extern LIB_myimread_C_API 
-void MW_CALL_CONV myimreadPrintStackTrace(void);
-
-
-extern LIB_myimread_C_API 
-bool MW_CALL_CONV mlxMyimread(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[]);
-
-
-extern LIB_myimread_C_API 
-long MW_CALL_CONV myimreadGetMcrID();
-
-
-
-
-
-
-extern LIB_myimread_C_API bool MW_CALL_CONV mlfMyimread(mxArray* imgpath);
-
-
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-</code></pre><br /><span></span>这么多东西，我们要用到的是myimreadInitialize, myimreadTerminate, mlxMyimread, mlfMyimread. 前两个用来初始化和终止是调用，mlxMyimread提供了像mexFunction那样的调用方式，而mlfMyimread的调用更符合c/c++的调用习惯。其他的接口暂时还没有过多的研究。
-<p><span></span>main函数如下所示，工程配置属性中，包含目录一定要添加matlab的库E:\MATLAB\extern\include；库目录也要添加：E:\MATLAB\extern\lib\win32\microsoft;连接器的输入中加入如下静态库：libmat.lib libmex.lib mclmcrrt.lib myimread.lib。前三个是matlab的静态库，第四个是我们自己生成的静态库</p>
-<p></p><pre><code class="language-cpp">#include "myimread.h"
+298[article_body]: <p><span></span>假设我们有一个用c++写的读图并显示的函数：void imread(const char* imgpath, cv::Mat&amp; img);这里用到了opencv的一些接口，那么怎样用matlab调用这个接口呢？要用到mex.h中定义的mexFunction函数，关于这个函数可以在matlab的help文档里学习。代码如下：</p>
+<p></p>
+<pre><code class="language-cpp">#include "opencv2/opencv.hpp"
 #include "mex.h"
-#include "matrix.h"
 
-void main()
+void imread(const char* imgpath, cv::Mat&amp; img)
 {
-	mclInitializeApplication(NULL, 0);	//must
+	img = cv::imread(imgpath);
+	cvNamedWindow("image", 0);
+	cv::imshow("image", img);
+    cv::waitKey(100);
+}
 
-	char imgpath[] = "C:\\Users\\New\\Desktop\\leifengta.jpg";
-	mxArray* mimgpath = mxCreateString(imgpath);
-	mxArray* img;
+void mexFunction( int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[] )
+{
+	if (nrhs &lt; 1)
+	{
+		mexErrMsgTxt("Not enough input arguments.\n");
+	}
+	else if (nrhs &gt; 1)
+	{
+		mexErrMsgTxt("Too many input arguments.\n");
+	}
+	char imgpath[100];
+	int imgpathlen = mxGetNumberOfElements(prhs[0]);
+	mxGetString(prhs[0], imgpath, imgpathlen+1);//why plus 1, see matlab help document
 
-	myimreadInitialize();	//must initialize before call myimread
-	mlfMyimread(mimgpath);
+	cv::Mat img;
+	imread(imgpath, img);
+	mexPrintf("image size: %d, %d\n", img.cols, img.rows);
+	if (nlhs == 0)
+	{
+		return;
+	}
+	int rows, cols, channels;
+	rows = img.rows;
+	cols = img.cols;
+	channels = img.channels();
 
-	myimreadTerminate();	
-	mclTerminateApplication();
-}</code></pre><br /><span></span>上述代码编译运行后，图像显示2s后关闭。
-<p><span></span>myimread.m不能返回图像数据，因为我们不知道图像的大小，这样的话在c/c++里面就无法初始化(即为返回值分配内存)返回值img，解决方法还没想出来。</p>
+	mexPrintf("channels: %d\n", channels);
+	if (channels == 1)
+	{
+		mwSize dims[2] = {rows, cols};
+		plhs[0] = mxCreateNumericArray(2, dims, mxUINT8_CLASS, mxREAL);
+		cv::Mat tmpimg = img.t();
+		memcpy(mxGetPr(plhs[0]), tmpimg.data, rows*cols*mxGetElementSize(plhs[0]));
+	}
+	else if (channels == 3)
+	{
+		mwSize dims[3] = {rows, cols, 3};
+		plhs[0] = mxCreateNumericArray(3, dims, mxUINT8_CLASS, mxREAL);
+		std::vector&lt;cv::Mat&gt; ch;
+		split(img, ch);
+		cv::Mat R = ch[2].t();
+		int bitdepth = sizeof(uchar);
+		memcpy((uchar*)mxGetData(plhs[0]), R.data, rows*cols*bitdepth);
+		//mxGetPr返回值为double*,此处应为mxGetData,返回值为void*,须进行强制转换
+		cv::Mat G = ch[1].t();
+		memcpy((uchar*)mxGetData(plhs[0])+rows*cols*bitdepth, G.data, rows*cols*bitdepth);
+		cv::Mat B = ch[0].t();
+		memcpy((uchar*)mxGetData(plhs[0])+rows*cols*bitdepth*2, B.data, rows*cols*bitdepth);
+		//opencv的Mat是按行存储，且顺序为BGR，即先存第一行：(B,G,R),(B,G,R)...
+		//matlab的Mat是按列存储，且先存完R,再存G,再存B，即第一列：R;R;R...G;G;G...B;B;B...
+	}
+}</code></pre><br /><span></span>上述代码保存为imread.cpp文件，有了此代码，打开matlab，当前工作目录切换到imread.cpp所在的目录，matlab命令窗口中输入
+<p></p>
+<p></p>
+<pre><code class="language-plain"> mex -IE:\opencv\build\include -LE:\opencv\build\x86\vc10\lib -lopencv_core248 -lopencv_highgui248  imread.cpp</code></pre><br /><span></span>关于mex的具体用法，可参见help，-I指定第三方头文件目录，-L指定第三方lib文件目录，-l指定lib文件目录下所依赖的具体lib，注意此处不能用opencv的debug库，最后是要编译的cpp文件。还有一种方法是采用mexopts.bat文件，在C:\Users\New\AppData\Roaming\MathWorks\MATLAB\R2010b\mexopts.bat下，可通过在并令窗口中输入fullfile(prefdir,'mexopts.bat')获得该文件的路径，一般不要在原文件中修改，而是把它考出来放到imread.cpp目录下，在其中添加依赖的第三方头文件和库目录，最后用mex
+ -f mexopts.bat imread.cpp编译即可。
+<p></p>
+<p><span></span>编译通过会生成一个imread.mexw32的文件，有了它，接口就生成了。命令窗口输入img=imread(path of image);即能成功显示图像并将图像数据存储在img中。</p>
