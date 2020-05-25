@@ -3,8 +3,78 @@
 #include <fstream>
 #include <map>
 #include <vector>
+#include <algorithm>
+#include <locale>
+#include <codecvt>
 
 using namespace std;
+
+std::string UnicodeToUTF8(const std::wstring & wstr)
+{
+	std::string ret;
+	try {
+		std::wstring_convert< std::codecvt_utf8<wchar_t> > wcv;
+		ret = wcv.to_bytes(wstr);
+	} catch (const std::exception & e) {
+		std::cerr << e.what() << std::endl;
+	}
+	return ret;
+}
+
+std::wstring UTF8ToUnicode(const std::string & str)
+{
+	std::wstring ret;
+	try {
+		std::wstring_convert< std::codecvt_utf8<wchar_t> > wcv;
+		ret = wcv.from_bytes(str);
+	} catch (const std::exception & e) {
+		std::cerr << e.what() << std::endl;
+	}
+	return ret;
+}
+
+std::string UnicodeToANSI(const std::wstring & wstr)
+{
+	setlocale(LC_CTYPE, "");
+	std::string ret;
+	std::mbstate_t state = 0;
+	const wchar_t *src = wstr.data();
+	size_t len = std::wcsrtombs(nullptr, &src, 0, &state);
+	if (static_cast<size_t>(-1) != len) {
+		std::unique_ptr< char [] > buff(new char[len + 1]);
+		len = std::wcsrtombs(buff.get(), &src, len, &state);
+		if (static_cast<size_t>(-1) != len) {
+			ret.assign(buff.get(), len);
+		}
+	}
+	return ret;
+}
+
+std::wstring ANSIToUnicode(const std::string & str)
+{
+	std::wstring ret;
+	std::mbstate_t state;
+	const char *src = str.data();
+	size_t len = std::mbsrtowcs(nullptr, &src, 0, &state);
+	if (static_cast<size_t>(-1) != len) {
+		std::unique_ptr< wchar_t [] > buff(new wchar_t[len + 1]);
+		len = std::mbsrtowcs(buff.get(), &src, len, &state);
+		if (static_cast<size_t>(-1) != len) {
+			ret.assign(buff.get(), len);
+		}
+	}
+	return ret;
+}
+
+std::string UTF8ToANSI(const std::string & str)
+{
+	return UnicodeToANSI(UTF8ToUnicode(str));
+}
+
+std::string ANSIToUTF8(const std::string & str)
+{
+	return UnicodeToUTF8(ANSIToUnicode(str));
+}
 
 void loadHtml(const string& file_name, vector<string>& lines)
 {
@@ -135,7 +205,7 @@ void tagsFactory()
 	getline(config_file, line);
 	string hms = line.substr(line.find(':')+2);
 	getline(config_file, line);
-	string category = line.substr(line.find(':')+2);
+	string category = UTF8ToANSI(line.substr(line.find(':')+2));
 	getline(config_file, line);
 	int cnt = stoi(line.substr(line.find(':')+2));
 
@@ -192,10 +262,316 @@ void tagsFactory()
 	writeHtml("tags_index.html", index);
 }
 
+
+class CategoryArchive
+{
+public:
+	int year;
+	int month;
+	int day;
+	string category;
+	string name;
+	string hms;
+	string ymd;
+	string md;
+	string description;
+	void parseYMD()
+	{
+		if (ymd.empty())
+			return;
+		size_t start = 0;
+		year = stoi(ymd.substr(start, ymd.find('-', start)-start));
+		start = ymd.find('-', start)+1;
+		md = ymd.substr(start);
+		month = stoi(ymd.substr(start, ymd.find('-', start)-start));
+		start = ymd.find('-', start)+1;
+		day = stoi(ymd.substr(start));
+	}
+
+};
+void categoryFactory()
+{
+	string config_file = "config/timeline.txt";
+	map<string, vector<string> > config;
+	loadConfig(config_file, config);
+
+	string index_file = "../../categories/";
+	index_file += config["category"][0];
+	index_file += "/index.html";
+	index_file = UTF8ToANSI(index_file);
+	vector<string> index;
+	loadHtml(index_file, index);
+
+	CategoryArchive to_add;
+	to_add.ymd = config["ymd"][0];
+	to_add.hms = config["hms"][0];
+	to_add.name = config["name"][0];
+	to_add.category = config["category"][0];
+	to_add.description = config["description"][0];
+	to_add.parseYMD();
+
+	vector<CategoryArchive> archives;
+	archives.push_back(to_add);
+	int section_start = -1, section_end = -1;
+	for (int i = 0; i < index.size(); ++i)
+	{
+		if (index[i].find("<section class=\"archives-wrap\">") != string::npos)
+		{
+			if (section_start < 0)
+				section_start = i;
+			string& tmp = index[i+2];
+			string year_start_str = "class=\"archive-year\">";
+			auto year_start_index = tmp.find(year_start_str)+year_start_str.size();
+			string section_year = tmp.substr(year_start_index, 4);
+			for (int j = 3; i+j < index.size(); ++j)
+			{
+				if (index[i+j].find("</section>") != string::npos)
+				{
+					section_end = i+j;
+					i = i+j;
+					break;
+				}
+				if (index[i+j].find("<div class=\"archives\">") != string::npos)
+				{
+					CategoryArchive arch;
+					arch.year = stoi(section_year);
+					string time_str = index[i+j+6];
+					string date_start_str = "<time datetime=\"";
+					auto date_start_index = time_str.find(date_start_str)+date_start_str.size();
+					arch.ymd = time_str.substr(date_start_index, time_str.find('T', date_start_index)-date_start_index);
+					auto time_start_index = time_str.find('T', date_start_index) + 1;
+					arch.hms = time_str.substr(time_start_index, time_str.find('Z', time_start_index)-time_start_index);
+					arch.parseYMD();
+
+					string detail_str = index[i+j+12];
+					string detail_start_str = "<a class=\"article-title\" href=\"";
+					auto detail_start_index = detail_str.find(detail_start_str)+detail_start_str.size();
+					detail_start_index = detail_str.find('/', detail_start_index)+1;		// timeline
+					detail_start_index = detail_str.find('/', detail_start_index)+1;		// 2015
+					detail_start_index = detail_str.find('/', detail_start_index)+1;		// 其他
+					arch.category = detail_str.substr(detail_start_index, detail_str.find('/', detail_start_index)-detail_start_index);
+					detail_start_index = detail_str.find('/', detail_start_index)+1;		// c++调用
+					arch.name = detail_str.substr(detail_start_index, detail_str.find('/', detail_start_index)-detail_start_index);
+					detail_start_index = detail_str.find('/', detail_start_index)+3;
+					arch.description = detail_str.substr(detail_start_index, detail_str.find("</a>", detail_start_index)-detail_start_index);
+					archives.push_back(arch);
+				}
+			}
+		}
+	}
+
+	sort(archives.begin(), archives.end(), [](CategoryArchive& a, CategoryArchive& b)->bool
+	{
+		if (a.year > b.year) return true;
+		else if (a.year == b.year)
+		{
+			if (a.month > b.month) return true;
+			else if (a.month == b.month) return a.day > b.day;
+			else return false;
+		}
+		else
+			return false;
+	});
+
+	if (section_start >= 0)
+	{
+		index.erase(index.begin()+section_start, index.begin()+section_end+1);
+	}
+	vector<string> new_archives;
+	int pre_year = 0;
+	for (int i = 0; i < archives.size(); ++i)
+	{
+		string year_str = to_string((long long)archives[i].year);
+		if (pre_year != archives[i].year)
+		{
+			pre_year = archives[i].year;
+			new_archives.emplace_back("      <section class=\"archives-wrap\">");
+			new_archives.emplace_back("        <div class=\"archive-year-wrap\">");
+			string tmp("          <a href=\"./archives/");
+			tmp += year_str + "/\" class=\"archive-year\">" + year_str + "</a>";
+			new_archives.emplace_back(tmp);
+			new_archives.emplace_back("        </div>");
+			new_archives.emplace_back("");
+			new_archives.emplace_back("        <div class=\"archives\">");
+		}
+		new_archives.emplace_back("            <article class=\"archive-article archive-type-post\">");
+		new_archives.emplace_back("              <div class=\"archive-article-inner\">");
+		new_archives.emplace_back("                <header class=\"archive-article-header\">");
+		new_archives.emplace_back("                      <div class=\"article-meta\">");
+		new_archives.emplace_back("                        <a href=\"./timeline/"+year_str+"/"+archives[i].category+"/"+archives[i].name+"/\""+" class=\"archive-article-date\">");
+		new_archives.emplace_back("                          <time datetime=\""+archives[i].ymd+"T"+archives[i].hms+"Z\" itemprop=\"datePublished\">"+archives[i].md+"</time>");
+		new_archives.emplace_back("                        </a>");
+		new_archives.emplace_back("                      </div>");
+		new_archives.emplace_back("");
+		new_archives.emplace_back("");
+		new_archives.emplace_back("                    <h1 itemprop=\"name\">");
+		new_archives.emplace_back("                      <a class=\"article-title\" href=\"./timeline/"+year_str+"/"+archives[i].category+"/"+archives[i].name+"/\">"+archives[i].description+"</a>");
+		new_archives.emplace_back("                    </h1>");
+		new_archives.emplace_back("");
+		new_archives.emplace_back("");
+		new_archives.emplace_back("                    <div class=\"article-info info-on-archive\">");
+		new_archives.emplace_back("                        <div class=\"article-category tagcloud\">");
+		new_archives.emplace_back("                        <a class=\"article-category-link\" href=\"./categories/"+archives[i].category+"/\">"+archives[i].category+"</a>");
+		new_archives.emplace_back("                        </div>");
+		new_archives.emplace_back("                    </div>");
+		new_archives.emplace_back("                    <div class=\"clearfix\"></div>");
+		new_archives.emplace_back("                </header>");
+		new_archives.emplace_back("              </div>");
+		new_archives.emplace_back("            </article>");
+		
+		if (i == archives.size()-1 || archives[i].year != archives[i+1].year)
+		{
+			new_archives.emplace_back("        </div>");
+			new_archives.emplace_back("      </section>");
+		}
+	}
+	index.insert(index.begin()+section_start, new_archives.begin(), new_archives.end());
+	string to_write = to_add.category+"_"+to_add.name+".html";
+	writeHtml(UTF8ToANSI(to_write), index);
+}
+
+void categoryFactory()
+{
+	string config_file = "config/timeline.txt";
+	map<string, vector<string> > config;
+	loadConfig(config_file, config);
+
+	string index_file = "../../archives/index.html";
+	loadHtml(index_file, index);
+
+	CategoryArchive to_add;
+	to_add.ymd = config["ymd"][0];
+	to_add.hms = config["hms"][0];
+	to_add.name = config["name"][0];
+	to_add.category = config["category"][0];
+	to_add.description = config["description"][0];
+	to_add.parseYMD();
+
+	vector<CategoryArchive> archives;
+	archives.push_back(to_add);
+	int section_start = -1, section_end = -1;
+	for (int i = 0; i < index.size(); ++i)
+	{
+		if (index[i].find("<section class=\"archives-wrap\">") != string::npos)
+		{
+			if (section_start < 0)
+				section_start = i;
+			string& tmp = index[i+2];
+			string year_start_str = "class=\"archive-year\">";
+			auto year_start_index = tmp.find(year_start_str)+year_start_str.size();
+			string section_year = tmp.substr(year_start_index, 4);
+			for (int j = 3; i+j < index.size(); ++j)
+			{
+				if (index[i+j].find("</section>") != string::npos)
+				{
+					section_end = i+j;
+					i = i+j;
+					break;
+				}
+				if (index[i+j].find("<div class=\"archives\">") != string::npos)
+				{
+					CategoryArchive arch;
+					arch.year = stoi(section_year);
+					string time_str = index[i+j+6];
+					string date_start_str = "<time datetime=\"";
+					auto date_start_index = time_str.find(date_start_str)+date_start_str.size();
+					arch.ymd = time_str.substr(date_start_index, time_str.find('T', date_start_index)-date_start_index);
+					auto time_start_index = time_str.find('T', date_start_index) + 1;
+					arch.hms = time_str.substr(time_start_index, time_str.find('Z', time_start_index)-time_start_index);
+					arch.parseYMD();
+
+					string detail_str = index[i+j+12];
+					string detail_start_str = "<a class=\"article-title\" href=\"";
+					auto detail_start_index = detail_str.find(detail_start_str)+detail_start_str.size();
+					detail_start_index = detail_str.find('/', detail_start_index)+1;		// timeline
+					detail_start_index = detail_str.find('/', detail_start_index)+1;		// 2015
+					detail_start_index = detail_str.find('/', detail_start_index)+1;		// 其他
+					arch.category = detail_str.substr(detail_start_index, detail_str.find('/', detail_start_index)-detail_start_index);
+					detail_start_index = detail_str.find('/', detail_start_index)+1;		// c++调用
+					arch.name = detail_str.substr(detail_start_index, detail_str.find('/', detail_start_index)-detail_start_index);
+					detail_start_index = detail_str.find('/', detail_start_index)+3;
+					arch.description = detail_str.substr(detail_start_index, detail_str.find("</a>", detail_start_index)-detail_start_index);
+					archives.push_back(arch);
+				}
+			}
+		}
+	}
+
+	sort(archives.begin(), archives.end(), [](CategoryArchive& a, CategoryArchive& b)->bool
+	{
+		if (a.year > b.year) return true;
+		else if (a.year == b.year)
+		{
+			if (a.month > b.month) return true;
+			else if (a.month == b.month) return a.day > b.day;
+			else return false;
+		}
+		else
+			return false;
+	});
+
+	if (section_start >= 0)
+	{
+		index.erase(index.begin()+section_start, index.begin()+section_end+1);
+	}
+	vector<string> new_archives;
+	int pre_year = 0;
+	for (int i = 0; i < archives.size(); ++i)
+	{
+		string year_str = to_string((long long)archives[i].year);
+		if (pre_year != archives[i].year)
+		{
+			pre_year = archives[i].year;
+			new_archives.emplace_back("      <section class=\"archives-wrap\">");
+			new_archives.emplace_back("        <div class=\"archive-year-wrap\">");
+			string tmp("          <a href=\"./archives/");
+			tmp += year_str + "/\" class=\"archive-year\">" + year_str + "</a>";
+			new_archives.emplace_back(tmp);
+			new_archives.emplace_back("        </div>");
+			new_archives.emplace_back("");
+			new_archives.emplace_back("        <div class=\"archives\">");
+		}
+		new_archives.emplace_back("            <article class=\"archive-article archive-type-post\">");
+		new_archives.emplace_back("              <div class=\"archive-article-inner\">");
+		new_archives.emplace_back("                <header class=\"archive-article-header\">");
+		new_archives.emplace_back("                      <div class=\"article-meta\">");
+		new_archives.emplace_back("                        <a href=\"./timeline/"+year_str+"/"+archives[i].category+"/"+archives[i].name+"/\""+" class=\"archive-article-date\">");
+		new_archives.emplace_back("                          <time datetime=\""+archives[i].ymd+"T"+archives[i].hms+"Z\" itemprop=\"datePublished\">"+archives[i].md+"</time>");
+		new_archives.emplace_back("                        </a>");
+		new_archives.emplace_back("                      </div>");
+		new_archives.emplace_back("");
+		new_archives.emplace_back("");
+		new_archives.emplace_back("                    <h1 itemprop=\"name\">");
+		new_archives.emplace_back("                      <a class=\"article-title\" href=\"./timeline/"+year_str+"/"+archives[i].category+"/"+archives[i].name+"/\">"+archives[i].description+"</a>");
+		new_archives.emplace_back("                    </h1>");
+		new_archives.emplace_back("");
+		new_archives.emplace_back("");
+		new_archives.emplace_back("                    <div class=\"article-info info-on-archive\">");
+		new_archives.emplace_back("                        <div class=\"article-category tagcloud\">");
+		new_archives.emplace_back("                        <a class=\"article-category-link\" href=\"./categories/"+archives[i].category+"/\">"+archives[i].category+"</a>");
+		new_archives.emplace_back("                        </div>");
+		new_archives.emplace_back("                    </div>");
+		new_archives.emplace_back("                    <div class=\"clearfix\"></div>");
+		new_archives.emplace_back("                </header>");
+		new_archives.emplace_back("              </div>");
+		new_archives.emplace_back("            </article>");
+
+		if (i == archives.size()-1 || archives[i].year != archives[i+1].year)
+		{
+			new_archives.emplace_back("        </div>");
+			new_archives.emplace_back("      </section>");
+		}
+	}
+	index.insert(index.begin()+section_start, new_archives.begin(), new_archives.end());
+	string to_write = to_add.category+"_"+to_add.name+".html";
+	writeHtml(UTF8ToANSI(to_write), index);
+}
+
 int main()
 {
 	//timelineFactory();
-	tagsFactory();
+	//tagsFactory();
+	categoryFactory();
 
 	return 0;
 }
