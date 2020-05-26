@@ -5,6 +5,9 @@ ymd: 2015-11-01
 hms: 11:26:00
 description: matlab与c/c++混合编程——matlab调用c/c++
 title: matlab与c/c++混合编程——matlab调用c/c++
+main_page_description: 通过简单的例子说明如何使用matlab调用c/c++的函数接口。
+main_page_add: true
+main_page_pos: 2
 20[description]: ${description}
 22[og-title]: ${description}
 23[og-url]: ${time}/${category}/${name}/index.html

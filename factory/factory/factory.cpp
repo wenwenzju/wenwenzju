@@ -52,6 +52,7 @@ std::string UnicodeToANSI(const std::wstring & wstr)
 
 std::wstring ANSIToUnicode(const std::string & str)
 {
+	setlocale(LC_CTYPE, "");
 	std::wstring ret;
 	std::mbstate_t state;
 	const char *src = str.data();
@@ -276,6 +277,7 @@ public:
 	string ymd;
 	string md;
 	string description;
+	string title;
 	void parseYMD()
 	{
 		if (ymd.empty())
@@ -568,12 +570,132 @@ void archivesFactory()
 	writeHtml("archives.html", index);
 }
 
+void mainPageFactory()
+{
+	string config_file = "config/timeline.txt";
+	map<string, vector<string> > config;
+	loadConfig(config_file, config);
+	if (config["main_page_add"][0] == "false")
+		return;
+
+	string index_file = "../../index.html";
+	vector<string> index;
+	loadHtml(index_file, index);
+
+	CategoryArchive to_add;
+	to_add.ymd = config["ymd"][0];
+	to_add.hms = config["hms"][0];
+	to_add.name = config["name"][0];
+	to_add.category = config["category"][0];
+	to_add.description = config["main_page_description"][0];
+	to_add.title = config["title"][0];
+	to_add.parseYMD();
+
+	vector<CategoryArchive> archives;
+	int section_start = -1, section_end = -1;
+	for (int i = 0; i < index.size(); ++i)
+	{
+		if (index[i].find("    <article id=") != string::npos)
+		{
+			if (section_start < 0) section_start = i;
+			
+			CategoryArchive arch;
+			string time_str = index[i+4];
+			string date_start_str = "<time datetime=\"";
+			auto date_start_index = time_str.find(date_start_str)+date_start_str.size();
+			arch.ymd = time_str.substr(date_start_index, time_str.find('T', date_start_index)-date_start_index);
+			auto time_start_index = time_str.find('T', date_start_index) + 1;
+			arch.hms = time_str.substr(time_start_index, time_str.find('Z', time_start_index)-time_start_index);
+			arch.parseYMD();
+
+			string detail_str = index[i+19];
+			string detail_start_str = "<a class=\"article-title\" href=\"";
+			auto detail_start_index = detail_str.find(detail_start_str)+detail_start_str.size();
+			detail_start_index = detail_str.find('/', detail_start_index)+1;		// timeline
+			detail_start_index = detail_str.find('/', detail_start_index)+1;		// 2015
+			detail_start_index = detail_str.find('/', detail_start_index)+1;		// 其他
+			arch.category = detail_str.substr(detail_start_index, detail_str.find('/', detail_start_index)-detail_start_index);
+			detail_start_index = detail_str.find('/', detail_start_index)+1;		// c++调用
+			arch.name = detail_str.substr(detail_start_index, detail_str.find('/', detail_start_index)-detail_start_index);
+			detail_start_index = detail_str.find('/', detail_start_index)+3;
+			arch.title = detail_str.substr(detail_start_index, detail_str.find("</a>", detail_start_index)-detail_start_index);
+
+			string description_str = index[i+23];
+			string description_start_str = "<p>";
+			auto description_start_index = description_str.find(description_start_str)+description_start_str.size();
+			arch.description = description_str.substr(description_start_index, description_str.find("</p>")-description_start_index);
+			archives.push_back(arch);
+		}
+		else if (index[i].find("</article>")!=string::npos)
+		{
+			section_end = i;
+			break;
+		}
+	}
+	int pos = stoi(config["main_page_pos"][0]);
+	if (pos <= 0) archives.insert(archives.begin(), to_add);
+	else if (pos >= archives.size()) archives.push_back(to_add);
+	else archives.insert(archives.begin()+pos-1, to_add);
+	if (section_start >= 0)
+	{
+		index.erase(index.begin()+section_start, index.begin()+section_end+1);
+	}
+	vector<string> new_archives;
+	for (int i = 0; i < archives.size(); ++i)
+	{
+		string href = "./timeline/";
+		href += to_string((long long)archives[i].year)+"/"+archives[i].category+"/"+archives[i].name+"/";
+		new_archives.emplace_back("    <article id=\"post-"+archives[i].title+"\" class=\"article article-type-post\" itemscope itemprop=\"blogPost\">");
+		new_archives.emplace_back("");
+		new_archives.emplace_back("    <div class=\"article-meta\">");
+		new_archives.emplace_back("      <a href=\""+href+"\" class=\"article-date\">");
+		new_archives.emplace_back("        <time datetime=\""+archives[i].ymd+"T"+archives[i].hms+"Z\" itemprop=\"datePublished\">"+archives[i].ymd+"</time>");
+		new_archives.emplace_back("      </a>");
+		new_archives.emplace_back("");
+		string tmp = "      <a href=\""+href+"#comments\" title=\""+ANSIToUTF8("查看评论")+"\">";
+		new_archives.emplace_back(tmp);
+		new_archives.emplace_back("          <i class=\"fa fa-comments-o\" aria-hidden=\"true\"></i>");
+		new_archives.emplace_back("          <span class=\"count-comment\"></span>");
+		new_archives.emplace_back("          <span class=\"ds-thread-count\"  data-thread-key=\""+href.substr(2)+"\" ></span>");
+		new_archives.emplace_back("      </a>");
+		new_archives.emplace_back("");
+		new_archives.emplace_back("    </div>");
+		new_archives.emplace_back("");
+		new_archives.emplace_back("    <div class=\"article-inner\">");
+		new_archives.emplace_back("        <input type=\"hidden\" class=\"isFancy\" />");
+		new_archives.emplace_back("        <header class=\"article-header\">");
+		new_archives.emplace_back("          <h1 itemprop=\"name\">");
+		new_archives.emplace_back("            <a class=\"article-title\" href=\""+href+"\">"+archives[i].title+"</a>");
+		new_archives.emplace_back("          </h1>");
+		new_archives.emplace_back("        </header>");
+		new_archives.emplace_back("        <div class=\"article-entry\" itemprop=\"articleBody\">");
+		new_archives.emplace_back("          <p>"+archives[i].description+"</p>");
+		new_archives.emplace_back("        </div>");
+		new_archives.emplace_back("");
+		new_archives.emplace_back("        <div class=\"article-info article-info-index\">");
+		new_archives.emplace_back("          <div class=\"article-category tagcloud\">");
+		new_archives.emplace_back("          <a class=\"article-category-link\" href=\"./categories/"+archives[i].category+"/\">"+archives[i].category+"</a>");
+		new_archives.emplace_back("          </div>");
+		new_archives.emplace_back("          <p class=\"article-more-link\">");
+		tmp = "            <a href=\""+href+"#more\">"+ANSIToUTF8("阅读全文")+" >></a>";
+		new_archives.emplace_back(tmp);
+		new_archives.emplace_back("          </p>");
+		new_archives.emplace_back("          <div class=\"clearfix\"></div>");
+		new_archives.emplace_back("        </div>");
+		new_archives.emplace_back("    </div>");
+		new_archives.emplace_back("");
+		new_archives.emplace_back("    </article>");
+	}
+	index.insert(index.begin()+section_start, new_archives.begin(), new_archives.end());
+	writeHtml("main_page.html", index);
+}
 int main()
 {
-	timelineFactory();
+	/*timelineFactory();
 	tagsFactory();
 	categoryFactory();
-	archivesFactory();
+	archivesFactory();*/
+	mainPageFactory();
 
 	return 0;
 }
