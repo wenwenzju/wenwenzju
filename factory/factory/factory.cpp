@@ -380,6 +380,17 @@ void categoryFactory()
 	{
 		index.erase(index.begin()+section_start, index.begin()+section_end+1);
 	}
+	else
+	{
+		for (int i = 0; i < index.size(); ++i)
+		{
+			if (index[i].find("<div class=\"body-wrap\">") != string::npos)
+			{
+				section_start = i+1;
+				break;
+			}
+		}
+	}
 	vector<string> new_archives;
 	int pre_year = 0;
 	for (int i = 0; i < archives.size(); ++i)
@@ -691,10 +702,10 @@ void mainPageFactory()
 }
 int main()
 {
-	/*timelineFactory();
+	timelineFactory();
 	tagsFactory();
 	categoryFactory();
-	archivesFactory();*/
+	archivesFactory();
 	mainPageFactory();
 
 	return 0;
